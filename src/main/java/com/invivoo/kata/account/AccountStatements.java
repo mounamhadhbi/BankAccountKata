@@ -1,28 +1,28 @@
-package com.invivoo.kata.helper;
+package com.invivoo.kata.account;
 
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static java.util.Collections.*;
-import static java.util.Comparator.*;
+import static com.invivoo.kata.DefaultConfig.AS_OF_DAY;
+import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.joining;
 
 /**
- * Account statement
+ * List of Account statement
  */
 public class AccountStatements implements Iterable<AccountStatement> {
 
     private List<AccountStatement> statements;
 
-    public AccountStatements() {
-        this.statements = emptyList();
+    AccountStatements() {
+        this.statements = new ArrayList<>();
     }
 
-    public AccountStatements(List<AccountStatement> statements) {
-        this.statements = statements;
+    private AccountStatements(List<AccountStatement> statements) {
+        this.statements = new ArrayList<>(statements);
     }
 
     @Override
@@ -34,21 +34,21 @@ public class AccountStatements implements Iterable<AccountStatement> {
         return statements;
     }
 
-    public Stream<AccountStatement> stream() {
+    private Stream<AccountStatement> stream() {
         return statements.stream();
     }
 
-    public AccountStatements addStatement(AccountStatement statement) {
+    AccountStatements addStatement(AccountStatement statement) {
         this.statements.add(statement);
         return this;
     }
 
-    public AccountStatements at(LocalDate at) {
+    public AccountStatements at(LocalDateTime at) {
         assert (at != null);
         return new AccountStatements(stream().filter(s -> Objects.equals(s.getStatementDate(), at)).collect(Collectors.toList()));
     }
 
-    public AccountStatements before(LocalDate date) {
+    public AccountStatements before(LocalDateTime date) {
         assert (date != null);
         return new AccountStatements(
                 stream()
@@ -57,7 +57,7 @@ public class AccountStatements implements Iterable<AccountStatement> {
         );
     }
 
-    public AccountStatements beforeOrOn(LocalDate date) {
+    public AccountStatements beforeOrOn(LocalDateTime date) {
         assert (date != null);
         return new AccountStatements(
                 stream()
@@ -66,7 +66,7 @@ public class AccountStatements implements Iterable<AccountStatement> {
         );
     }
 
-    public AccountStatements after(LocalDate date) {
+    public AccountStatements after(LocalDateTime date) {
         assert (date != null);
         return new AccountStatements(
                 stream()
@@ -75,7 +75,7 @@ public class AccountStatements implements Iterable<AccountStatement> {
         );
     }
 
-    public AccountStatements afterOrOn(LocalDate date) {
+    public AccountStatements afterOrOn(LocalDateTime date) {
         assert (date != null);
         return new AccountStatements(
                 stream()
@@ -84,13 +84,25 @@ public class AccountStatements implements Iterable<AccountStatement> {
         );
     }
 
+    LocalDateTime lastStatementsDate() {
+        return stream()
+                .max(Comparator.comparing(AccountStatement::getStatementDate))
+                .map(AccountStatement::getStatementDate)
+                .orElse(AS_OF_DAY);
+    }
 
-    public String print() {
+
+    String print() {
         return stream()
                 .sorted(comparing(AccountStatement::getStatementDate))
                 .map(AccountStatement::print)
                 .collect(joining("\n"));
     }
 
-
+    @Override
+    public String toString() {
+        return "AccountStatements{" +
+                "statements=" + statements +
+                '}';
+    }
 }

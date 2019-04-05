@@ -1,10 +1,10 @@
-package com.invivoo.kata.helper;
+package com.invivoo.kata;
 
 import java.util.Currency;
 import java.util.Objects;
-import java.util.Optional;
 
-import static com.invivoo.kata.helper.Default.DEFAULT_CURRENCY;
+import static com.invivoo.kata.DefaultConfig.DEFAULT_CURRENCY;
+
 
 public class Amount {
 
@@ -14,7 +14,7 @@ public class Amount {
 
     public static final Amount ZERO = zeroOf(DEFAULT_CURRENCY);
 
-    public Amount(double value, Currency currency) {
+    private Amount(double value, Currency currency) {
         this.value = value;
         this.currency = currency;
     }
@@ -35,17 +35,20 @@ public class Amount {
         return value;
     }
 
-    public  Amount add(Amount toAdd)
-    {
-        assert currency.equals(toAdd.currency):"Amounts must be on the same currency";
+    public Amount add(Amount toAdd) {
+        assert currency.equals(toAdd.currency) : "Amounts must be on the same currency";
         return of(doubleValue() + toAdd.doubleValue(), this.currency);
     }
 
-    public  Amount substruct(Amount toSubstruct)
-    {
-        assert currency.equals(toSubstruct.currency):"Amounts must be on the same currency";
+    public Amount substruct(Amount toSubstruct) {
+        assert currency.equals(toSubstruct.currency) : "Amounts must be on the same currency";
         return of(doubleValue() - toSubstruct.doubleValue(), this.currency);
     }
+
+    public Amount negate() {
+        return of(-doubleValue(), this.currency);
+    }
+
     public Currency getCurrency() {
         return currency;
     }
